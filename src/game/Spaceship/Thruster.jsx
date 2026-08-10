@@ -16,12 +16,18 @@ export default function Thruster({ rigidBodyRef }) {
   });
 
   useFrame((state, delta) => {
-    if (!rigidBodyRef.current) return;
+    if (!rigidBodyRef.current || !pointsRef.current) return;
 
-    pointsRef.current.position.set(
-      rigidBodyRef.current.translation().x,
-      rigidBodyRef.current.translation().y,
-      rigidBodyRef.current.translation().z,
+    const translation = rigidBodyRef.current.translation();
+    const rotation = rigidBodyRef.current.rotation();
+
+    pointsRef.current.position.set(translation.x, translation.y, translation.z);
+
+    pointsRef.current.quaternion.set(
+      rotation.x,
+      rotation.y,
+      rotation.z,
+      rotation.w,
     );
 
     uniforms.current.uTime.value += delta;
