@@ -1,6 +1,10 @@
 uniform float uTime;
 
 void main() {
-    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
+    vec3 transformedPosition = position;
+
+    transformedPosition.z += uTime;
+
+    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(transformedPosition, 1.0);
     gl_PointSize = 2.0;
 }

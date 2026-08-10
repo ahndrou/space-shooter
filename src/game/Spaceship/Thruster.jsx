@@ -9,16 +9,16 @@ const PARTICLE_COUNT = 1000;
 
 export default function Thruster({ rigidBodyRef }) {
   const [particlePositions] = useState(() => createParticlePositions(0.5));
+  const pointsRef = useRef();
 
   const uniforms = useRef({
-    uOriginTranslation: { value: new Vector3() },
     uTime: { value: 0 },
   });
 
   useFrame((state, delta) => {
     if (!rigidBodyRef.current) return;
 
-    uniforms.current.uOriginTranslation.value.set(
+    pointsRef.current.position.set(
       rigidBodyRef.current.translation().x,
       rigidBodyRef.current.translation().y,
       rigidBodyRef.current.translation().z,
@@ -28,7 +28,7 @@ export default function Thruster({ rigidBodyRef }) {
   });
 
   return (
-    <points>
+    <points ref={pointsRef}>
       <bufferGeometry>
         <bufferAttribute
           attach={"attributes-position"}
