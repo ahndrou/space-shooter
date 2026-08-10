@@ -1,20 +1,45 @@
-import { useState } from "react";
+import vertexShader from "../shaders/thruster/vertex.glsl";
+import fragmentShader from "../shaders/thruster/fragment.glsl";
+
+import { useFrame } from "@react-three/fiber";
+import { useRef, useState } from "react";
 import { Spherical, Vector3 } from "three";
 
 const PARTICLE_COUNT = 1000;
 
-export default function Thruster({ position }) {
+export default function Thruster({ rigidBodyRef }) {
   const [particlePositions] = useState(() => createParticlePositions(0.5));
 
+  const uniforms = useRef({
+    uOriginTranslation: { value: new Vector3() },
+    uTime: { value: 0 },
+  });
+
+  useFrame((state, delta) => {
+    if (!rigidBodyRef.current) return;
+
+    uniforms.current.uOriginTranslation.value.set(
+      rigidBodyRef.current.translation().x,
+      rigidBodyRef.current.translation().y,
+      rigidBodyRef.current.translation().z,
+    );
+
+    uniforms.current.uTime.value += delta;
+  });
+
   return (
-    <points position={position}>
+    <points>
       <bufferGeometry>
         <bufferAttribute
           attach={"attributes-position"}
           args={[particlePositions, 3]}
         />
       </bufferGeometry>
-      <pointsMaterial />
+      <shaderMaterial
+        vertexShader={vertexShader}
+        fragmentShader={fragmentShader}
+        uniforms={uniforms.current}
+      />
     </points>
   );
 }

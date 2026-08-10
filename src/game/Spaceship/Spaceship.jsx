@@ -30,13 +30,11 @@ export default function Spaceship({ rigidBodyRef, playAreaSize }) {
   return (
     <>
       <Weapon ship={rigidBodyRef} />
-      <group>
-        <SpaceshipRigidBody
-          rigidBodyRef={rigidBodyRef}
-          playAreaSize={playAreaSize}
-        />
-        <Thruster />
-      </group>
+      <SpaceshipRigidBody
+        rigidBodyRef={rigidBodyRef}
+        playAreaSize={playAreaSize}
+      />
+      <Thruster rigidBodyRef={rigidBodyRef} />
     </>
   );
 }
