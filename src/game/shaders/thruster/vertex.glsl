@@ -3,6 +3,8 @@ uniform float uTime;
 in vec3 velocity;
 in float spawnTime;
 
+out float vAge;
+
 void main() {
     float age = uTime - spawnTime;
 
@@ -14,4 +16,6 @@ void main() {
 
     // Account for perspective effect on particles.
     gl_PointSize = 20.0 / -viewPosition.z;
+
+    vAge = age;
 }

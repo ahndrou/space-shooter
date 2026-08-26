@@ -3,7 +3,13 @@ import fragmentShader from "../shaders/thruster/fragment.glsl";
 
 import { useFrame } from "@react-three/fiber";
 import { useRef, useState } from "react";
-import { DynamicDrawUsage, Quaternion, Spherical, Vector3 } from "three";
+import {
+  AdditiveBlending,
+  DynamicDrawUsage,
+  Quaternion,
+  Spherical,
+  Vector3,
+} from "three";
 
 const PARTICLE_COUNT = 1000;
 
@@ -104,6 +110,8 @@ function ShaderMaterial() {
       vertexShader={vertexShader}
       fragmentShader={fragmentShader}
       uniforms={uniforms.current}
+      transparent
+      blending={AdditiveBlending}
     />
   );
 }
