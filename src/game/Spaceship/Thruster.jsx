@@ -5,48 +5,45 @@ import { useFrame } from "@react-three/fiber";
 import { useRef, useState } from "react";
 import { Spherical, Vector3 } from "three";
 
-const PARTICLE_COUNT = 1000;
+const PARTICLE_COUNT = 3000;
 
 export default function Thruster({ rigidBodyRef }) {
-  const [particlePositions] = useState(() => createParticlePositions(0.5));
-  const pointsRef = useRef();
+  return (
+    <points>
+      <BufferGeometry />
+      <ShaderMaterial />
+    </points>
+  );
+}
 
+function BufferGeometry() {
+  const [particlePositions] = useState(() => createParticlePositions(1));
+
+  return (
+    <bufferGeometry>
+      <bufferAttribute
+        attach={"attributes-position"}
+        args={[particlePositions, 3]}
+      />
+    </bufferGeometry>
+  );
+}
+
+function ShaderMaterial() {
   const uniforms = useRef({
     uTime: { value: 0 },
   });
 
   useFrame((state, delta) => {
-    if (!rigidBodyRef.current || !pointsRef.current) return;
-
-    const translation = rigidBodyRef.current.translation();
-    const rotation = rigidBodyRef.current.rotation();
-
-    pointsRef.current.position.set(translation.x, translation.y, translation.z);
-
-    pointsRef.current.quaternion.set(
-      rotation.x,
-      rotation.y,
-      rotation.z,
-      rotation.w,
-    );
-
     uniforms.current.uTime.value += delta;
   });
 
   return (
-    <points ref={pointsRef}>
-      <bufferGeometry>
-        <bufferAttribute
-          attach={"attributes-position"}
-          args={[particlePositions, 3]}
-        />
-      </bufferGeometry>
-      <shaderMaterial
-        vertexShader={vertexShader}
-        fragmentShader={fragmentShader}
-        uniforms={uniforms.current}
-      />
-    </points>
+    <shaderMaterial
+      vertexShader={vertexShader}
+      fragmentShader={fragmentShader}
+      uniforms={uniforms.current}
+    />
   );
 }
 
