@@ -34,6 +34,7 @@ export default function Spaceship({ rigidBodyRef, playAreaSize }) {
         rigidBodyRef={rigidBodyRef}
         playAreaSize={playAreaSize}
       />
+      {/* Not nested in the RB because I don't want thruster particles to move with the ship. */}
       <Thruster
         rigidBodyRef={rigidBodyRef}
         positionOffset={new Vector3(1.5, -0.2, 0)}

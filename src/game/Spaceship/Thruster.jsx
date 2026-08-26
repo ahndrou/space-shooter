@@ -10,8 +10,11 @@ import {
   Spherical,
   Vector3,
 } from "three";
+import { useKeyboardControls } from "@react-three/drei";
 
 const PARTICLE_COUNT = 1000;
+const BASE_SPEED = 6;
+const RESTING_SPEED = 0.5;
 
 export default function Thruster({ rigidBodyRef, positionOffset }) {
   return (
@@ -41,6 +44,8 @@ function BufferGeometry({ rigidBodyRef, positionOffset }) {
 
   const particleIndex = useRef(0);
 
+  const [, getKeys] = useKeyboardControls();
+
   useFrame((state) => {
     if (!rigidBodyRef.current) return;
 
@@ -64,7 +69,13 @@ function BufferGeometry({ rigidBodyRef, positionOffset }) {
       positionOffset,
       particleIndex,
     );
-    setNewSpawnVelocity(velocityRef, rbVelocity, rbRotation, particleIndex);
+    setNewSpawnVelocity(
+      velocityRef,
+      rbVelocity,
+      rbRotation,
+      getKeys,
+      particleIndex,
+    );
     setNewSpawnTime(spawnTimeRef, state.clock.elapsedTime, particleIndex);
 
     particleIndex.current = (particleIndex.current + 1) % PARTICLE_COUNT;
@@ -141,11 +152,14 @@ function setNewSpawnVelocity(
   velocityAttributeRef,
   rbVelocity,
   rbRotation,
+  getKeys,
   currentParticleIndex,
 ) {
+  const exhaustSpeed = getKeys().forward ? BASE_SPEED : RESTING_SPEED;
+
   // Local +Z axis, rotated into world space
   const worldZAxis = new Vector3(0, 0, 1).applyQuaternion(rbRotation);
-  const exhaustVelocity = worldZAxis.multiplyScalar(3);
+  const exhaustVelocity = worldZAxis.multiplyScalar(exhaustSpeed);
   const totalVelocity = exhaustVelocity.add(rbVelocity.multiplyScalar(0.4));
 
   velocityAttributeRef.current.setXYZ(
