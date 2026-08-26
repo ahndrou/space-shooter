@@ -1,7 +1,14 @@
 uniform float uTime;
 
+in vec3 velocity;
+in float spawnTime;
+
 void main() {
-    vec4 viewPosition = viewMatrix * modelMatrix * vec4(position, 1.0);
+    float age = uTime - spawnTime;
+
+    vec3 transformedPosition = position + velocity * age;
+    
+    vec4 viewPosition = viewMatrix * modelMatrix * vec4(transformedPosition, 1.0);
 
     gl_Position = projectionMatrix * viewPosition;
 

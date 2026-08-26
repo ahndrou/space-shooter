@@ -3,9 +3,9 @@ import fragmentShader from "../shaders/thruster/fragment.glsl";
 
 import { useFrame } from "@react-three/fiber";
 import { useRef, useState } from "react";
-import { DynamicDrawUsage, Spherical, Vector3 } from "three";
+import { DynamicDrawUsage, Quaternion, Spherical, Vector3 } from "three";
 
-const PARTICLE_COUNT = 300;
+const PARTICLE_COUNT = 1000;
 
 export default function Thruster({ rigidBodyRef }) {
   return (
@@ -20,39 +20,48 @@ export default function Thruster({ rigidBodyRef }) {
 }
 
 function BufferGeometry({ rigidBodyRef }) {
-  const particlePositions = useRef(createInitialPositions());
+  const [initialPositions] = useState(() =>
+    createInitialArrayValues(100000, 3),
+  );
+  const [initialVelocities] = useState(() => createInitialArrayValues(0, 3));
+  const [initialSpawnTimes] = useState(() => createInitialArrayValues(0, 1));
 
-  const positionAttributeRef = useRef();
+  const positionRef = useRef();
+  const velocityRef = useRef();
+  const spawnTimeRef = useRef();
 
-  const bufferIndex = useRef(0);
+  const particleIndex = useRef(0);
 
-  useFrame(() => {
+  useFrame((state) => {
     if (!rigidBodyRef.current) return;
 
-    const newPosition = new Vector3(
-      rigidBodyRef.current.translation().x,
-      rigidBodyRef.current.translation().y,
-      rigidBodyRef.current.translation().z,
-    ).add(getRandomSphericalPosition(0.45));
+    setNewSpawnPosition(positionRef, rigidBodyRef, particleIndex);
+    setNewSpawnVelocity(velocityRef, rigidBodyRef, particleIndex);
+    setNewSpawnTime(spawnTimeRef, state.clock.elapsedTime, particleIndex);
 
-    positionAttributeRef.current.setXYZ(
-      bufferIndex.current,
-      newPosition.x,
-      newPosition.y,
-      newPosition.z,
-    );
-
-    positionAttributeRef.current.needsUpdate = true;
-
-    bufferIndex.current = (bufferIndex.current + 1) % PARTICLE_COUNT;
+    particleIndex.current = (particleIndex.current + 1) % PARTICLE_COUNT;
   });
 
   return (
     <bufferGeometry>
       <bufferAttribute
         attach={"attributes-position"}
-        args={[particlePositions.current, 3]}
-        ref={positionAttributeRef}
+        args={[initialPositions, 3]}
+        ref={positionRef}
+        usage={DynamicDrawUsage}
+      />
+
+      <bufferAttribute
+        attach={"attributes-velocity"}
+        args={[initialVelocities, 3]}
+        ref={velocityRef}
+        usage={DynamicDrawUsage}
+      />
+
+      <bufferAttribute
+        attach={"attributes-spawnTime"}
+        args={[initialSpawnTimes, 1]}
+        ref={spawnTimeRef}
         usage={DynamicDrawUsage}
       />
     </bufferGeometry>
@@ -64,8 +73,8 @@ function ShaderMaterial() {
     uTime: { value: 0 },
   });
 
-  useFrame((state, delta) => {
-    uniforms.current.uTime.value += delta;
+  useFrame((state) => {
+    uniforms.current.uTime.value = state.clock.elapsedTime;
   });
 
   return (
@@ -77,21 +86,79 @@ function ShaderMaterial() {
   );
 }
 
-// Acts to hide initial particles. The alternative is to set point size
-// in the shader to zero, but this doesn't work on all systems.
-function createInitialPositions() {
-  const positions = new Float32Array(PARTICLE_COUNT * 3);
+function setNewSpawnPosition(
+  positionAttributeRef,
+  rigidBodyRef,
+  currentParticleIndex,
+) {
+  const newPosition = new Vector3(
+    rigidBodyRef.current.translation().x,
+    rigidBodyRef.current.translation().y,
+    rigidBodyRef.current.translation().z,
+  ).add(getRandomSphericalPosition(0.25));
 
-  let i3 = 0;
+  positionAttributeRef.current.setXYZ(
+    currentParticleIndex.current,
+    newPosition.x,
+    newPosition.y,
+    newPosition.z,
+  );
+
+  positionAttributeRef.current.needsUpdate = true;
+}
+
+function setNewSpawnVelocity(
+  velocityAttributeRef,
+  rigidBodyRef,
+  currentParticleIndex,
+) {
+  const linvel = rigidBodyRef.current.linvel();
+  const rotation = rigidBodyRef.current.rotation();
+
+  const rbVelocity = new Vector3(linvel.x, linvel.y, linvel.z);
+
+  const quaternion = new Quaternion(
+    rotation.x,
+    rotation.y,
+    rotation.z,
+    rotation.w,
+  );
+
+  // Local +Z axis, rotated into world space
+  const worldZAxis = new Vector3(0, 0, 1).applyQuaternion(quaternion);
+  const exhaustVelocity = worldZAxis.multiplyScalar(3);
+  const totalVelocity = exhaustVelocity.add(rbVelocity.multiplyScalar(0.4));
+
+  velocityAttributeRef.current.setXYZ(
+    currentParticleIndex.current,
+    totalVelocity.x,
+    totalVelocity.y,
+    totalVelocity.z,
+  );
+
+  velocityAttributeRef.current.needsUpdate = true;
+}
+
+function setNewSpawnTime(
+  spawnTimeAttributeRef,
+  currentTime,
+  currentParticleIndex,
+) {
+  spawnTimeAttributeRef.current.setX(currentParticleIndex.current, currentTime);
+
+  spawnTimeAttributeRef.current.needsUpdate = true;
+}
+
+function createInitialArrayValues(value, dimensions) {
+  const values = new Float32Array(PARTICLE_COUNT * dimensions);
+
   for (let i = 0; i < PARTICLE_COUNT; i++) {
-    i3 = i * 3;
-
-    positions[i3] = 100000;
-    positions[i3 + 1] = 100000;
-    positions[i3 + 2] = 100000;
+    for (let j = 0; j < dimensions; j++) {
+      values[i * dimensions + j] = value;
+    }
   }
 
-  return positions;
+  return values;
 }
 
 function getRandomSphericalPosition(sphereRadius) {
