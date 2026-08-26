@@ -34,7 +34,14 @@ export default function Spaceship({ rigidBodyRef, playAreaSize }) {
         rigidBodyRef={rigidBodyRef}
         playAreaSize={playAreaSize}
       />
-      <Thruster rigidBodyRef={rigidBodyRef} />
+      <Thruster
+        rigidBodyRef={rigidBodyRef}
+        positionOffset={new Vector3(1.5, -0.2, 0)}
+      />
+      <Thruster
+        rigidBodyRef={rigidBodyRef}
+        positionOffset={new Vector3(-1.5, -0.2, 0)}
+      />
     </>
   );
 }

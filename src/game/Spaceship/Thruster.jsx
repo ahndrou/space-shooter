@@ -7,19 +7,22 @@ import { DynamicDrawUsage, Quaternion, Spherical, Vector3 } from "three";
 
 const PARTICLE_COUNT = 1000;
 
-export default function Thruster({ rigidBodyRef }) {
+export default function Thruster({ rigidBodyRef, positionOffset }) {
   return (
     // Points are initially set way outside of the play area. ThreeJS uses bounding
     // box based on these for frustrum culling. With frustrum culling on, this
     // results in the entire points object being culled.
     <points frustumCulled={false}>
-      <BufferGeometry rigidBodyRef={rigidBodyRef} />
+      <BufferGeometry
+        rigidBodyRef={rigidBodyRef}
+        positionOffset={positionOffset}
+      />
       <ShaderMaterial />
     </points>
   );
 }
 
-function BufferGeometry({ rigidBodyRef }) {
+function BufferGeometry({ rigidBodyRef, positionOffset }) {
   const [initialPositions] = useState(() =>
     createInitialArrayValues(100000, 3),
   );
@@ -35,8 +38,27 @@ function BufferGeometry({ rigidBodyRef }) {
   useFrame((state) => {
     if (!rigidBodyRef.current) return;
 
-    setNewSpawnPosition(positionRef, rigidBodyRef, particleIndex);
-    setNewSpawnVelocity(velocityRef, rigidBodyRef, particleIndex);
+    const linvel = rigidBodyRef.current.linvel();
+    const rotation = rigidBodyRef.current.rotation();
+    const translation = rigidBodyRef.current.translation();
+
+    const rbVelocity = new Vector3(linvel.x, linvel.y, linvel.z);
+    const rbPosition = new Vector3(translation.x, translation.y, translation.z);
+    const rbRotation = new Quaternion(
+      rotation.x,
+      rotation.y,
+      rotation.z,
+      rotation.w,
+    );
+
+    setNewSpawnPosition(
+      positionRef,
+      rbRotation,
+      rbPosition,
+      positionOffset,
+      particleIndex,
+    );
+    setNewSpawnVelocity(velocityRef, rbVelocity, rbRotation, particleIndex);
     setNewSpawnTime(spawnTimeRef, state.clock.elapsedTime, particleIndex);
 
     particleIndex.current = (particleIndex.current + 1) % PARTICLE_COUNT;
@@ -88,14 +110,14 @@ function ShaderMaterial() {
 
 function setNewSpawnPosition(
   positionAttributeRef,
-  rigidBodyRef,
+  rbRotation,
+  rbPosition,
+  positionOffset,
   currentParticleIndex,
 ) {
-  const newPosition = new Vector3(
-    rigidBodyRef.current.translation().x,
-    rigidBodyRef.current.translation().y,
-    rigidBodyRef.current.translation().z,
-  ).add(getRandomSphericalPosition(0.25));
+  const newPosition = rbPosition
+    .add(positionOffset.clone().applyQuaternion(rbRotation))
+    .add(getRandomSphericalPosition(0.25));
 
   positionAttributeRef.current.setXYZ(
     currentParticleIndex.current,
@@ -109,23 +131,12 @@ function setNewSpawnPosition(
 
 function setNewSpawnVelocity(
   velocityAttributeRef,
-  rigidBodyRef,
+  rbVelocity,
+  rbRotation,
   currentParticleIndex,
 ) {
-  const linvel = rigidBodyRef.current.linvel();
-  const rotation = rigidBodyRef.current.rotation();
-
-  const rbVelocity = new Vector3(linvel.x, linvel.y, linvel.z);
-
-  const quaternion = new Quaternion(
-    rotation.x,
-    rotation.y,
-    rotation.z,
-    rotation.w,
-  );
-
   // Local +Z axis, rotated into world space
-  const worldZAxis = new Vector3(0, 0, 1).applyQuaternion(quaternion);
+  const worldZAxis = new Vector3(0, 0, 1).applyQuaternion(rbRotation);
   const exhaustVelocity = worldZAxis.multiplyScalar(3);
   const totalVelocity = exhaustVelocity.add(rbVelocity.multiplyScalar(0.4));
 
