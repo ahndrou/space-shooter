@@ -23,7 +23,9 @@ export default function Thruster({ rigidBodyRef, positionOffset }) {
     // Points are initially set way outside of the play area. ThreeJS uses bounding
     // box based on these for frustrum culling. With frustrum culling on, this
     // results in the entire points object being culled.
-    <points frustumCulled={false}>
+
+    // Raycasting is turned off to avoid interference with crosshair aiming.
+    <points frustumCulled={false} raycast={() => null}>
       <BufferGeometry
         rigidBodyRef={rigidBodyRef}
         positionOffset={positionOffset}
