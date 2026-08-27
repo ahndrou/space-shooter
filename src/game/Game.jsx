@@ -13,7 +13,7 @@ export default function Game() {
   const gameID = useGameStateStore((state) => state.gameID);
 
   return (
-    <Physics key={gameID} gravity={[0, 0, 0]} timeStep={1 / 200}>
+    <Physics key={gameID} gravity={[0, 0, 0]} timeStep={"vary"}>
       <Level playAreaSize={PLAY_AREA_SIZE} />
       <PlayArea size={PLAY_AREA_SIZE} />
       <Player playAreaSize={PLAY_AREA_SIZE} />
