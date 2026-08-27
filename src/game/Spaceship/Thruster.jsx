@@ -14,8 +14,9 @@ import { useKeyboardControls } from "@react-three/drei";
 import { lerp } from "three/src/math/MathUtils.js";
 
 const PARTICLE_COUNT = 1000;
-const PARTICLE_BASE_SPEED = 6;
-const PARTICLE_RESTING_SPEED = 0.5;
+const PARTICLE_BASE_SPEED = 4;
+const PARTICLE_RESTING_SPEED = 0.75;
+const MAX_PARTICLE_SPREAD = 0.4;
 
 export default function Thruster({ rigidBodyRef, positionOffset }) {
   return (
@@ -80,7 +81,7 @@ function BufferGeometry({ rigidBodyRef, positionOffset }) {
     currentParticleSpeed.current = lerp(
       currentParticleSpeed.current,
       speedTarget,
-      0.01,
+      0.06,
     );
 
     setNewSpawnVelocity(
@@ -137,6 +138,7 @@ function ShaderMaterial() {
       uniforms={uniforms.current}
       transparent
       blending={AdditiveBlending}
+      depthWrite={false}
     />
   );
 }
@@ -170,7 +172,13 @@ function setNewSpawnVelocity(
   currentParticleIndex,
 ) {
   // Local +Z axis, rotated into world space
-  const worldZAxis = new Vector3(0, 0, 1).applyQuaternion(rbRotation);
+  const worldZAxis = new Vector3(
+    Math.random() * MAX_PARTICLE_SPREAD,
+    Math.random() * MAX_PARTICLE_SPREAD,
+    1,
+  )
+    .normalize()
+    .applyQuaternion(rbRotation);
   const exhaustVelocity = worldZAxis.multiplyScalar(particleSpeed);
   const totalVelocity = exhaustVelocity.add(rbVelocity.multiplyScalar(0.4));
 

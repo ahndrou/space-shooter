@@ -1,8 +1,6 @@
-in float vAge;
-
-const float FADE_FACTOR = 1.2;
-
 void main() {
-    float alpha = max(0.0, 1.0 - vAge * FADE_FACTOR);
-    gl_FragColor = vec4(vec3(1.0), alpha);
+    // Base circular shape
+    float strength = (0.5 - distance(gl_PointCoord, vec2(0.5))) * 2.0;
+
+    gl_FragColor = vec4(0.2, 0.4, 0.8, strength);
 }
