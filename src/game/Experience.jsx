@@ -25,9 +25,9 @@ export default function Experience() {
           <Skybox />
           <EffectComposer>
             <Bloom
-              luminanceThreshold={0.8}
-              intensity={0.4}
-              luminanceSmoothing={0.4}
+              luminanceThreshold={0.7}
+              intensity={1.2}
+              luminanceSmoothing={0.6}
             />
           </EffectComposer>
         </Canvas>
