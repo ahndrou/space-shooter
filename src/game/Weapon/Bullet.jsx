@@ -4,8 +4,8 @@ import { Trail } from "@react-three/drei";
 
 const INITIAL_SPEED = 120;
 
-const BULLET_COLOR = "#914CFF";
-const TRAIL_COLOR = "#914CFF";
+const BULLET_COLOR = "#38E8FF";
+const TRAIL_COLOR = "#C8FAFF";
 
 export default React.memo(Bullet);
 
