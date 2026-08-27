@@ -17,6 +17,10 @@ const SEGMENT_DISTANCE = 2;
 const WANDER_RADIUS = 5;
 const WANDER_OFFSET = 6;
 
+const HEAD_COLOR = "#FF4B5C";
+const BODY_COLOR = "#FF4B5C";
+const WIREFRAME_COLOR = "#ffffff";
+
 export default React.memo(SnakeEnemy);
 
 export function SnakeEnemy({ position, segments, playAreaSize, onDeath, id }) {
@@ -84,10 +88,10 @@ function SnakeHead({ ref, position, playAreaSize, debug, removeParentSnake }) {
         />
         <group scale={1}>
           <mesh geometry={gltf.meshes["Head_Base"].geometry}>
-            <meshBasicMaterial transparent opacity={0.6} color="blue" />
+            <meshBasicMaterial transparent opacity={0.85} color={HEAD_COLOR} />
           </mesh>
           <mesh geometry={gltf.meshes["Head_Wireframe"].geometry}>
-            <meshBasicMaterial color={[1.4, 1.4, 1.4]} />
+            <meshBasicMaterial color={WIREFRAME_COLOR} />
           </mesh>
         </group>
       </RigidBody>
@@ -157,10 +161,10 @@ function BodySegment({ parentRef, index, max, position }) {
       >
         <group rotation={[0, Math.PI / 2, 0]}>
           <mesh ref={mesh} geometry={gltf.meshes["Body_Base"].geometry}>
-            <meshBasicMaterial transparent opacity={0.6} color="blue" />
+            <meshBasicMaterial transparent opacity={0.85} color={BODY_COLOR} />
           </mesh>
           <mesh ref={mesh} geometry={gltf.meshes["Body_Wireframe"].geometry}>
-            <meshBasicMaterial color={[0.8, 0.8, 0.8]} />
+            <meshBasicMaterial color={WIREFRAME_COLOR} />
           </mesh>
         </group>
 

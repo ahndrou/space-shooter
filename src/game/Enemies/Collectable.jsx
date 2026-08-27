@@ -8,7 +8,8 @@ import { Vector3 } from "three";
 import { useScoreStore } from "../../stores/useScoreStore";
 import { Exploder, useExploder } from "../Exploder/Exploder";
 
-const COLOR = "orange";
+const COLOR = "#FFB000";
+const WIREFRAME_COLOR = "#ffffff";
 
 export default function Collectable({
   position,
@@ -68,10 +69,10 @@ function CollectableRigidBody({ position, rotation, size, playAreaSize }) {
     >
       <BallCollider args={[size * 0.15]} restitution={1} />
       <mesh geometry={gltf.meshes["Base"].geometry}>
-        <meshBasicMaterial transparent opacity={0.6} color={COLOR} />
+        <meshBasicMaterial transparent opacity={0.85} color={COLOR} />
       </mesh>
-      <mesh geometry={gltf.meshes["Wireframe"].geometry}>
-        <meshBasicMaterial color={[1.4, 1.4, 1.4]} />
+      <mesh geometry={gltf.meshes["Wireframe"].geometry} scale={1.01}>
+        <meshBasicMaterial color={WIREFRAME_COLOR} />
       </mesh>
     </RigidBody>
   );

@@ -2,7 +2,7 @@ import { useGLTF, useKeyboardControls } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { CuboidCollider, RigidBody } from "@react-three/rapier";
 import { useEffect, useRef } from "react";
-import { Quaternion, Vector3 } from "three";
+import { Color, Quaternion, Vector3 } from "three";
 import Weapon from "../Weapon/Weapon";
 import useCentralSteering from "../hooks/useCentralSteering";
 import { useHealthStore } from "../../stores/useHealthStore";
@@ -109,7 +109,7 @@ function SpaceshipMesh() {
   return (
     <group rotation={[0, Math.PI / 2, 0]} scale={0.4}>
       <mesh geometry={gltf.meshes["Base"].geometry}>
-        <meshBasicMaterial color={"green"} transparent opacity={0.6} />
+        <meshBasicMaterial color={"#0080FF"} transparent opacity={0.85} />
       </mesh>
 
       <mesh geometry={gltf.meshes["Wireframe"].geometry}>
@@ -117,11 +117,11 @@ function SpaceshipMesh() {
       </mesh>
 
       <mesh geometry={gltf.meshes["Thruster_L"].geometry}>
-        <meshBasicMaterial color={"orange"} />
+        <meshBasicMaterial color={"#00BFFF"} />
       </mesh>
 
       <mesh geometry={gltf.meshes["Thruster_R"].geometry}>
-        <meshBasicMaterial color={"orange"} />
+        <meshBasicMaterial color={"#00BFFF"} />
       </mesh>
     </group>
   );

@@ -8,7 +8,8 @@ import { Exploder, useExploder } from "../../Exploder/Exploder";
 
 const MIN_TORQUE = 20;
 const MAX_TORQUE = 35;
-const COLOR = "yellow";
+
+const COLOR = "#B7FF3C";
 
 export default React.memo(ExplodingEnemy);
 

@@ -4,6 +4,9 @@ import { Trail } from "@react-three/drei";
 
 const INITIAL_SPEED = 120;
 
+const BULLET_COLOR = "#914CFF";
+const TRAIL_COLOR = "#914CFF";
+
 export default React.memo(Bullet);
 
 export function Bullet({ position, direction }) {
@@ -19,7 +22,7 @@ export function Bullet({ position, direction }) {
     // I tried everything I could think of, but the only solution that seems to work is to
     // hide the flickering by hiding the ends of the trail with attenuation.
     <Trail
-      color="orange"
+      color={TRAIL_COLOR}
       width={6}
       length={7}
       attenuation={(t) => (t < 0.02 || t > 0.98 ? 0 : t)}
@@ -32,7 +35,7 @@ export function Bullet({ position, direction }) {
       >
         <mesh>
           <sphereGeometry args={[0.15]} />
-          <meshBasicMaterial color="orange" />
+          <meshBasicMaterial color={BULLET_COLOR} />
         </mesh>
       </RigidBody>
     </Trail>

@@ -9,6 +9,8 @@ const MAX_TORQUE = 12;
 const MIN_FORCE = 3500;
 const MAX_FORCE = 5000;
 
+const COLOR = "#8C5BFF";
+
 export default React.memo(BasicEnemy);
 
 export function BasicEnemy({ position, size }) {
@@ -32,7 +34,7 @@ export function BasicEnemy({ position, size }) {
       <BallCollider args={[size * 0.97]} restitution={1} />
       <group scale={size}>
         <mesh geometry={gltf.meshes.Icosphere_1.geometry}>
-          <meshBasicMaterial color="green" transparent opacity={0.6} />
+          <meshBasicMaterial color={COLOR} transparent opacity={0.85} />
         </mesh>
 
         <mesh geometry={gltf.meshes.Icosphere_2.geometry}>
