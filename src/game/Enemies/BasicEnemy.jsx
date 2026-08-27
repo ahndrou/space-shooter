@@ -6,8 +6,8 @@ import useRandomImpulse from "../hooks/useRandomImpulse";
 
 const MIN_TORQUE = 7;
 const MAX_TORQUE = 12;
-const MIN_FORCE = 3500;
-const MAX_FORCE = 5000;
+const MIN_FORCE = 4500;
+const MAX_FORCE = 7000;
 
 const COLOR = "#8C5BFF";
 

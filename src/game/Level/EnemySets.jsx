@@ -8,7 +8,7 @@ import { ExplodingEnemy } from "../Enemies/ExplodingEnemy/ExplodingEnemy";
 import Collectable from "../Enemies/Collectable";
 
 const ENEMY_SIZE = 4;
-const BASIC_ENEMY_COUNT = 50;
+const BASIC_ENEMY_COUNT = 100;
 const SNAKE_COUNT = 5;
 const EXPLODING_ENEMY_COUNT = 40;
 const COLLECTABLES_COUNT = 30;
