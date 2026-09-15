@@ -67,6 +67,7 @@ body,
   fill: rgb(0, 255, 255);
   stroke-width: 5px;
   stroke: rgb(108, 126, 163);
+  overflow: visible;
 
   transition: fill 1s;
 }
